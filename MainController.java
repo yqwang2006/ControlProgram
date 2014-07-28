@@ -10,13 +10,16 @@ import java.net.Socket;
 import java.util.HashSet;
 public class MainController {
 	static int PORT = 8080;
+	public static HashMap<Integer, String> type_map;
 	static String remote_file_path = "http://101.227.252.154:81/file/";
 	//用于保存当前时刻运算的IP和对应的计算任务
 	public static HashMap<String,Integer> ipMatchTask = new HashMap<String,Integer>();
 	public static void main(String[] args){ 
 		//nodeState用于记录节点当前状态，0为空闲，1为运算，2为出错
 		//String ipPool[] = initIpIndex();
-		String ipPool[] = initIpIndexFromIPTable("F:/Java/ControlProgram/src/IPTABLE.txt");
+		fill_map();
+		//String ipPool[] = initIpIndexFromIPTable("F:/Java/ControlProgram/src/IPTABLE.txt");
+		String ipPool[] = initIpIndexFromIPTable("C:/Project/ControlProgram/IPTABLE.txt");
 		Vector<String> idleNodeIP = new Vector<String>();
 		initNodeState(idleNodeIP,ipPool);
 		//taskPool用于记录当前待完成任务
@@ -45,6 +48,16 @@ public class MainController {
 		}
 		
 	
+	}
+	private static void fill_map() {
+		type_map = new HashMap<Integer,String>();
+		type_map.put(1, "trainData");
+		type_map.put(2, "trainLabels");
+		type_map.put(3, "testData");
+		type_map.put(4, "testLabels");
+		type_map.put(5, "Finetune_data");
+		type_map.put(6, "Finetune_labels");
+		type_map.put(7, "Weight_addr");
 	}
 	private static String[] initIpIndexFromIPTable(String iptable) {
 		// TODO Auto-generated method stub
@@ -288,15 +301,8 @@ public class MainController {
 				String file_type = rs.getString("data_file_type");
 				
 				String remote_path = filename;// remote_file_path + filename;
-				if(data_type == 1){
-					prj.setTrainDataAddr(remote_path,file_type);
-				}else if(data_type == 2){
-					prj.setTrainLabelsAddr(remote_path,file_type);
-				}else if(data_type == 3){
-					prj.setTestDataAddr(remote_path,file_type);
-				}else{
-					prj.setTestLabelsAddr(remote_path,file_type);
-				}
+				DataAddress file_addr = new DataAddress(type_map.get(data_type),filename,file_type);
+				prj.get_data_addr().add(file_addr);
 			}
 
 			for(int j = 0;j < prj.getLayerNum();j++){

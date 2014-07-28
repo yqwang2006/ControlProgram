@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Vector;
 public class Project {
 	private int prjId;
@@ -5,17 +6,11 @@ public class Project {
 	private String prjName;
 	private int resultFlag;
 	private String resultAddr;
-	private String trainDataAddr;
-	private String trainLabelsAddr;
-	private String testDataAddr;
-	private String testLabelsAddr;
-	private String trainDataType;
-	private String trainLabelsType;
-	private String testDataType;
-	private String testLabelsType;
 	private int layerNum;
+	private Vector<DataAddress> data_addr;
 	private Vector<Param> global_info;
 	private Vector<LayerInfo> layers;
+	
 	String paramFileInfo;
 	public Project(int id, int userid, String name){
 		prjId = id;
@@ -24,11 +19,8 @@ public class Project {
 		resultFlag = -1;
 		resultAddr = null;
 		paramFileInfo = "";
+		data_addr = new Vector<DataAddress>();
 		layers = new Vector<LayerInfo>();
-		trainDataAddr = "";
-		trainLabelsAddr = "";
-		testDataAddr = "";
-		testLabelsAddr = "";
 		global_info = new Vector<Param>();
 	}
 	public Project(int id){
@@ -36,14 +28,12 @@ public class Project {
 		resultFlag = -1;
 		resultAddr = null;
 		paramFileInfo = "";
-		trainDataAddr = "";
-		trainLabelsAddr = "";
-		testDataAddr = "";
-		testLabelsAddr = "";
 		layers = new Vector<LayerInfo>();
+		data_addr = new Vector<DataAddress>();
 		global_info = new Vector<Param>();
 	}
 	
+
 	public void setResult(int flag, String addr){
 		resultFlag = flag;
 		resultAddr = addr;
@@ -60,17 +50,8 @@ public class Project {
 	public int getLayerNum(){
 		return layerNum;
 	}
-	public String getTrainDataAddr(){
-		return trainDataAddr;
-	}
-	public String getTrainLabelsAddr()	{
-		return trainLabelsAddr;
-	}
-	public String getTestDataAddr(){
-		return testDataAddr;
-	}
-	public String getTestLabelsAddr(){
-		return testLabelsAddr;
+	public Vector<DataAddress> get_data_addr(){
+		return data_addr;
 	}
 	public void addLayer(LayerInfo layer){
 		if(layers != null){
@@ -97,25 +78,11 @@ public class Project {
 	public void addGlobalInfo(Param p){
 		global_info.add(p);
 	}
-	public void setTrainDataAddr(String addr, String fileType){
-		trainDataAddr = addr;
-		trainDataType = fileType;
-	}
-	public void setTrainLabelsAddr(String addr, String fileType){
-		trainLabelsAddr = addr;
-		trainLabelsType = fileType;
-	}
-	public void setTestDataAddr(String addr, String fileType){
-		testDataAddr = addr;
-		testDataType = fileType;
-	}
-	public void setTestLabelsAddr(String addr, String fileType){
-		testLabelsAddr = addr;
-		testLabelsType = fileType;
-	}
+	
 	
 	public void fillParamFile(){
-		paramFileInfo = "Layer_num:"+layerNum+"\n";
+		paramFileInfo = "Project_name:" + prjId + "\n";
+		paramFileInfo += "Layer_num:"+layerNum+"\n";
 		
 		for(int i = 0;i < global_info.size();i++){
 			global_info.get(i).fillParamInfo();
@@ -127,15 +94,12 @@ public class Project {
 			layers.get(i).fillLayerInfo();
 			paramFileInfo += layers.get(i).layerInfo;
 		}
-		if(trainDataAddr != ""){
-			paramFileInfo += "trainData:" + trainDataAddr.replaceAll(":", "%")  + ","+ trainDataType +  "\n";
+		
+		for(int i = 0;i < data_addr.size(); i++){
+			data_addr.get(i).fillParamInfo();
+			paramFileInfo += data_addr.get(i).paramInfo;
 		}
-		if(trainLabelsAddr != "")
-			paramFileInfo += "trainLabels:" + trainLabelsAddr.replaceAll(":", "%") + ","+ trainLabelsType + "\n";
-		if(testDataAddr != "")
-			paramFileInfo += "testData:" + testDataAddr.replaceAll(":", "%") + ","+ testDataType + "\n";
-		if(testLabelsAddr != "")
-			paramFileInfo += "testLabels:" + testLabelsAddr.replaceAll(":", "%") + ","+ testLabelsType + "\n";
+		
 	}
 	public int hashCode(){
 		return ((Integer)prjId).hashCode();
