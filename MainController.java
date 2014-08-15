@@ -221,14 +221,15 @@ public class MainController {
 			Statement statement = conn.createStatement();
 	        ResultSet rs = statement.executeQuery(sql);
 	        
-	        int prjid,userid;
+	        int prjid,userid,prjtype;
 	        String prjName;
 	        
 	        taskPool.clear();
 	        while(rs.next()) {
 		          // 选择sname这列数据
 		          prjid = rs.getInt("prjId");
-		          Project task = new Project(prjid);
+		          prjtype = rs.getInt("type");
+		          Project task = new Project(prjid,prjtype);
 		          String paramName = getPrjInfo(task,prjid,conn);
 		          
 		          taskPool.add(task);

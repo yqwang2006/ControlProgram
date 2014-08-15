@@ -6,6 +6,7 @@ public class Project {
 	private String prjName;
 	private int resultFlag;
 	private String resultAddr;
+	private String prjType;
 	private int layerNum;
 	private Vector<DataAddress> data_addr;
 	private Vector<Param> global_info;
@@ -19,6 +20,7 @@ public class Project {
 		resultFlag = -1;
 		resultAddr = null;
 		paramFileInfo = "";
+		prjType = "UnsupervisedModel";
 		data_addr = new Vector<DataAddress>();
 		layers = new Vector<LayerInfo>();
 		global_info = new Vector<Param>();
@@ -28,11 +30,24 @@ public class Project {
 		resultFlag = -1;
 		resultAddr = null;
 		paramFileInfo = "";
+		prjType = "UnsuperviseModel";
 		layers = new Vector<LayerInfo>();
 		data_addr = new Vector<DataAddress>();
 		global_info = new Vector<Param>();
 	}
-	
+	public Project(int id, int type){
+		prjId = id;
+		resultFlag = -1;
+		resultAddr = null;
+		paramFileInfo = "";
+		if(type == 2)
+			prjType = "SuperviseModel";
+		else
+			prjType = "UnsuperviseModel";
+		layers = new Vector<LayerInfo>();
+		data_addr = new Vector<DataAddress>();
+		global_info = new Vector<Param>();
+	}
 
 	public void setResult(int flag, String addr){
 		resultFlag = flag;
@@ -82,6 +97,7 @@ public class Project {
 	
 	public void fillParamFile(){
 		paramFileInfo = "Project_name:" + prjId + "\n";
+		paramFileInfo += "Model_type:" + prjType + "\n";
 		paramFileInfo += "Layer_num:"+layerNum+"\n";
 		
 		for(int i = 0;i < global_info.size();i++){
