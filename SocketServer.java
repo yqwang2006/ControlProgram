@@ -1,4 +1,9 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
@@ -9,6 +14,8 @@ import java.util.Vector;
 
 public class SocketServer extends Thread {
 	public Vector<String> idleIP;
+	public String web_result_filepath = "C:/Users/Administrator/Desktop/apache-ftpserver-1.0.6/res/home/wyq/result/";
+		
 	private static Object lockObject = new Object();
 	public SocketServer(){
 		idleIP = new Vector<String>();
@@ -19,13 +26,12 @@ public class SocketServer extends Thread {
 		try {
 			Connection conn = createMysqlConn();
 			if(conn != null){
-				String sql = "update project set resultFlag = 5 where prjId = " + taskId; 
+				String sql = "update project set resultFlag = 5,resultAddr = '"+ web_result_filepath + "prj_" + taskId + ".zip' where prjId = " + taskId; 
 				// TODO 需要更新resultAddr
 				Statement statement = conn.createStatement();
 		        statement.executeUpdate(sql);
 			}else{
-				closeMysqlConn(conn);
-				System.exit(-1);
+				return;
 				
 			}
 			closeMysqlConn(conn);
@@ -37,7 +43,7 @@ public class SocketServer extends Thread {
             System.exit(-1);
         } catch(Exception e) { 
         	e.printStackTrace();
-        	System.exit(-1);
+        	return;
         }
 		
 	}
@@ -86,37 +92,64 @@ public class SocketServer extends Thread {
 	public void run() { 
 		ServerSocket s = null;  
 	    Socket socket  = null;  
+	    String ipaddr = new String();
 	    try {  
-	        s = new ServerSocket(8081);  
+	        
 	        //等待新请求、否则一直阻塞   
+	    	System.out.println("In socketserver");
 	        while(true){  
+	        	s = new ServerSocket(8081);  
 	            socket = s.accept();
 	            System.out.println("socket:"+socket);  
-	            ServeOneJabbr serveJabbr = new ServeOneJabbr(socket);
+	            BufferedReader br = null;  
+	            PrintWriter pw = null;
+	            String str = new String();
+	            try {  
+	                br = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
+	                pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);  
+	                str = br.readLine();  
+	                System.out.println(str);
+	                if(str.equals("END")){
+	                    br.close();  
+	                    pw.close();  
+	                    socket.close();  
+	                    break;  
+	                }else{
+	                	ipaddr = str;
+	                }
+	                System.out.println("Client Socket Message:"+str);  
+	                
+	                pw.flush();  
+	                
+	                
+	            } catch (Exception e) {  
+	            	try {  
+	                    br.close();  
+	                    pw.close();  
+	                    socket.close();  
+	                } catch (IOException e1) {  
+	                    // TODO Auto-generated catch block   
+	                    e1.printStackTrace();  
+	                    System.exit(-1);
+	                }  
+	            }
 	            
 	            synchronized(lockObject){
-	            	String str = serveJabbr.getMessage();
-	            	idleIP.add(str);
-	            	int taskId = MainController.ipMatchTask.get(str);
-	            	MainController.ipMatchTask.remove(str);
+	            	
+	            	idleIP.add(ipaddr);
+	            	int taskId = MainController.ipMatchTask.get(ipaddr);
+	            	MainController.ipMatchTask.remove(ipaddr);
 	            	updateDatabase(taskId);
 	            }
-	            sleep(10000);
+	            //sleep(10000);
 	        }  
 	    } catch (Exception e) {  
 	        try {  
-	            socket.close();  
+	            s.close();  
 	        } catch (IOException e1) {  
 	            // TODO Auto-generated catch block   
 	            e1.printStackTrace();  
 	        }  
-	    }finally{  
-	        try {  
-	            s.close();  
-	        } catch (IOException e) {  
-	            // TODO Auto-generated catch block   
-	            e.printStackTrace();  
-	        }  
-	    }  
+	    }
 	}
 }

@@ -19,7 +19,7 @@ public class MainController {
 		//String ipPool[] = initIpIndex();
 		fill_map();
 		//String ipPool[] = initIpIndexFromIPTable("F:/Java/ControlProgram/src/IPTABLE.txt");
-		String ipPool[] = initIpIndexFromIPTable("C:/Project/ControlProgram/IPTABLE.txt");
+		String ipPool[] = initIpIndexFromIPTable("IPTABLE.txt");
 		Vector<String> idleNodeIP = new Vector<String>();
 		initNodeState(idleNodeIP,ipPool);
 		//taskPool用于记录当前待完成任务
@@ -365,13 +365,5 @@ public class MainController {
         } 
 		return null;
 	}
-	private static String [] initIpIndex() {
-		// TODO Auto-generated method stub
-		String[] nodeState = new String[2];
-		nodeState[0] = "172.16.248.174";
-		nodeState[1] = "172.16.248.88";
 
-
-		return nodeState;
-	}
 }

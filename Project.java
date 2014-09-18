@@ -97,9 +97,9 @@ public class Project {
 	
 	public void fillParamFile(){
 		paramFileInfo = "Project_name:" + prjId + "\n";
-		paramFileInfo += "Model_type:" + prjType + "\n";
-		paramFileInfo += "Layer_num:"+layerNum+"\n";
 		
+		paramFileInfo += "Layer_num:"+layerNum+"\n";
+		paramFileInfo += "Model_type:" + prjType + "\n";
 		for(int i = 0;i < global_info.size();i++){
 			global_info.get(i).fillParamInfo();
 			paramFileInfo += global_info.get(i).paramInfo;

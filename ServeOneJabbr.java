@@ -13,6 +13,7 @@ public class ServeOneJabbr extends Thread{
     public String info = new String();  
     public ServeOneJabbr(Socket s){  
         socket = s;  
+        System.out.println("In one jabbr");
         try {  
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
             pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);  
@@ -30,7 +31,7 @@ public class ServeOneJabbr extends Thread{
             String str;  
             try {  
                 str = br.readLine();  
-                
+                System.out.println(str);
                 if(str.equals("END")){
                     br.close();  
                     pw.close();  
