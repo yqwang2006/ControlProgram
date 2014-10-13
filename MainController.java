@@ -26,7 +26,6 @@ public class MainController {
 		HashSet<Project> taskPool = new HashSet<Project>();
 		
 		SocketServer serverThread = new SocketServer();
-		serverThread.start();
 		while(true){
 			updateNodePool(idleNodeIP,serverThread);
 			Connection conn = createMysqlConn();
@@ -39,7 +38,7 @@ public class MainController {
 			//now get the task pool
 			scheduling(taskPool,idleNodeIP);
 			try {
-				Thread.sleep(100000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -322,7 +321,7 @@ public class MainController {
 			
 			prj.fillParamFile();
 			
-			System.out.print(prj.paramFileInfo);
+			//System.out.print(prj.paramFileInfo);
 			rs.close();
 
 		} catch(SQLException e) { 

@@ -13,82 +13,14 @@ import java.sql.Statement;
 import java.util.Vector;
 
 public class SocketServer extends Thread {
-	public Vector<String> idleIP;
-	public String web_result_filepath = "C:/Users/Administrator/Desktop/apache-ftpserver-1.0.6/res/home/wyq/result/";
+	public static Vector<String> idleIP;
 		
-	private static Object lockObject = new Object();
+	public static Object lockObject = new Object();
 	public SocketServer(){
 		idleIP = new Vector<String>();
-		//start();
+		start();
 	}
-	private  void updateDatabase(int taskId) {
-		// TODO Auto-generated method stub
-		try {
-			Connection conn = createMysqlConn();
-			if(conn != null){
-				String sql = "update project set resultFlag = 5,resultAddr = '"+ web_result_filepath + "prj_" + taskId + ".zip' where prjId = " + taskId; 
-				// TODO 需要更新resultAddr
-				Statement statement = conn.createStatement();
-		        statement.executeUpdate(sql);
-			}else{
-				return;
-				
-			}
-			closeMysqlConn(conn);
-			
-	        
-		} catch(SQLException e) { 
-            e.printStackTrace();
-            
-            System.exit(-1);
-        } catch(Exception e) { 
-        	e.printStackTrace();
-        	return;
-        }
-		
-	}
-	
-	private void closeMysqlConn(Connection conn) {
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-		
-	}
-	private Connection createMysqlConn() {
-		// 驱动程序名
-        String driver = "com.mysql.jdbc.Driver"; 
-        // URL指向要访问的数据库名scutcs
-        String url = "jdbc:mysql://101.227.252.154:3306/test";
-        // MySQL配置时的用户名
-        String user = "root"; 
-        // MySQL配置时的密码
-        String password = "root"; 
-        try { 
-            // 加载驱动程序
-            Class.forName(driver); 
-            // 连续数据库
-            Connection conn = DriverManager.getConnection(url, user, password); 
-            if(!conn.isClosed()) {
-           	 System.out.println("Succeeded connecting to the Database!"); 
-           	 return conn;
-            }
-        } catch(ClassNotFoundException e) { 
-            System.out.println("Sorry,can`t find the Driver!"); 
-            e.printStackTrace(); 
-            return null;
-        } catch(SQLException e) { 
-            e.printStackTrace();
-            return null;
-        } catch(Exception e) { 
-        	e.printStackTrace();
-        	return null;
-        } 
-		return null;
-	}
+
 	public void run() { 
 		ServerSocket s = null;  
 	    Socket socket  = null;  
@@ -97,11 +29,11 @@ public class SocketServer extends Thread {
 	        
 	        //等待新请求、否则一直阻塞   
 	    	System.out.println("In socketserver");
+	    	s = new ServerSocket(8081);  
 	        while(true){  
-	        	s = new ServerSocket(8081);  
-	            socket = s.accept();
-	            System.out.println("socket:"+socket);  
-	            BufferedReader br = null;  
+	        	
+	            new ServeOneJabbr(s); 
+	           /* BufferedReader br = null;  
 	            PrintWriter pw = null;
 	            String str = new String();
 	            try {  
@@ -140,8 +72,10 @@ public class SocketServer extends Thread {
 	            	int taskId = MainController.ipMatchTask.get(ipaddr);
 	            	MainController.ipMatchTask.remove(ipaddr);
 	            	updateDatabase(taskId);
-	            }
-	            //sleep(10000);
+	            }*/
+	            
+	            
+	            
 	        }  
 	    } catch (Exception e) {  
 	        try {  
